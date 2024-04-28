@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Chat App</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        .chat-box {
+            width: 500px;
+            height: 300px;
+            border: 1px solid black;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+
+        .message-input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .send-button {
+            width: 100%;
+            background-color: blue;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .online-users {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-box" id="chat-box"></div>
+    <div class="message-input">
+        <input type="text" id="message-input" placeholder="Enter your message here...">
+    </div>
+    <div class="send-button">
+        <button type="button" id="send-button">Send</button>
+    </div>
+    <div class="online-users">
+        <span id="online-users">Amount of online users: <span id="amount-of-online-users"></span></span>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        // Join the chat room
+        socket.emit("join");
+
+        // Handle incoming messages
+        socket.on("message", function(message) {
+            var chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += "<p>" + message + "</p>";
+        });
+
+        // Handle changes in the amount of online users
+        socket.on("amountofonlineusers", function(amountOfOnlineUsers) {
+            var onlineUsers = document.getElementById("amount-of-online-users");
+            onlineUsers.innerHTML = amountOfOnlineUsers;
+        });
+
+        // Send a message
+        document.getElementById("send-button").addEventListener("click", function() {
+            var message = document.getElementById("message-input").value;
+            socket.emit("message", message);
+            document.getElementById("message-input").value = "";
+        });
+    </script>
+</body>
+</html>
